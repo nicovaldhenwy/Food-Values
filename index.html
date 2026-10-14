@@ -208,14 +208,15 @@ const foods = [
  {name:"Muffin",value:300000,rarity:"Rare",demand:7,emoji:"🧁"},
  {name:"Sandwich East (Veg)",value:300000,rarity:"Rare",demand:6,emoji:"🥪"},
  {name:"Paratha West (Paneer)",value:280000,rarity:"Rare",demand:7,emoji:"🫓"},
+ {name:"Paratha East (Aloo)",value:200000,rarity:"Common",demand:5,emoji:"🫓"},
  {name:"Patties",value:150000,rarity:"Common",demand:6,emoji:"🥐"},
  {name:"Chips",value:150000,rarity:"Common",demand:6,emoji:"🍟"},
- {name:"Paratha East (Aloo)",value:140000,rarity:"Common",demand:5,emoji:"🫓"},
  {name:"Dosa",value:120000,rarity:"Common",demand:5,emoji:"🥞"},
  {name:"Plain Paratha",value:70000,rarity:"Common",demand:3,emoji:"🫓"},
  {name:"Puri",value:60000,rarity:"Common",demand:3,emoji:"🫓"},
  {name:"Roti",value:40000,rarity:"Common",demand:2,emoji:"🫓"}
 ];
+
 
 function formatValue(n){
  if(n>=1000000)return (n/1000000).toLocaleString("en-US",{maximumFractionDigits:2})+"M";
