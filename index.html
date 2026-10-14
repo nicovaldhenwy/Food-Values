@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Trade</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;background:#090b10;color:#f5f5f7;
+  font-family:Arial,sans-serif
+}
+header{
+  padding:20px 16px 12px;
+  background:#10131b;border-bottom:1px solid #272b36
+}
+.brand{font-size:25px;font-weight:800;letter-spacing:-.7px}
+.subtitle{color:#9299aa;font-size:13px;margin-top:5px}
+nav{display:flex;gap:8px;margin-top:18px}
+nav button{
+  flex:1;padding:12px;border:1px solid #303544;
+  border-radius:9px;background:#191d28;color:#bbbfd0;
+  font-weight:bold
+}
+nav button.active{background:#f04444;color:white;border-color:#f04444}
+main{padding:16px;max-width:900px;margin:auto}
+h2{font-size:21px;margin:8px 0}
+.muted{color:#9399aa;font-size:13px}
+.search{
+  width:100%;padding:13px;margin:17px 0 10px;
+  background:#141822;color:white;border:1px solid #303544;
+  border-radius:9px;font-size:15px;outline:none
+}
+.controls{display:flex;gap:9px;margin-bottom:16px}
+select{
+  flex:1;min-width:0;padding:11px 8px;
+  color:white;background:#141822;border:1px solid #303544;
+  border-radius:8px
+}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.food-card{
+  position:relative;text-align:left;color:white;
+  background:#121620;border:1px solid #292e3b;
+  border-radius:12px;padding:12px;min-width:0
+}
+.food-card:active{background:#202635}
+.food-art{
+  height:90px;display:flex;align-items:center;justify-content:center;
+  font-size:52px;background:#1b202d;border-radius:9px;
+  margin-bottom:11px
+}
+.rarity{
+  position:absolute;top:18px;right:18px;
+  font-size:10px;font-weight:bold;padding:5px 7px;
+  border-radius:6px;background:#222;color:white
+}
+.Mythical{color:#ff7777;border:1px solid #c83b48}
+.Legendary{color:#ffdc65;border:1px solid #b99425}
+.Rare{color:#d1a0ff;border:1px solid #8851ba}
+.Uncommon{color:#79bdff;border:1px solid #347ebc}
+.Common{color:#d0d0d0;border:1px solid #626773}
+.food-name{font-weight:bold;font-size:14px;line-height:1.3;min-height:36px}
+.value{font-size:21px;font-weight:800;margin:7px 0}
+.demand-label{font-size:11px;color:#a4aabb;display:flex;justify-content:space-between}
+.bar{height:5px;background:#2b3040;border-radius:9px;margin-top:7px;overflow:hidden}
+.fill{height:100%;background:#f04444;border-radius:9px}
+button{cursor:pointer}
+.detail-top{display:flex;align-items:center;gap:15px;margin:20px 0}
+.detail-art{
+  width:120px;height:120px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:65px;background:#1b202d;border-radius:14px
+}
+.detail-value{font-size:34px;font-weight:800;margin:15px 0}
+.panel{background:#121620;border:1px solid #292e3b;border-radius:12px;padding:16px;margin-top:12px}
+.back{
+  padding:10px 14px;background:#202532;border:1px solid #353b4a;
+  color:white;border-radius:8px;margin:8px 0
+}
+.hidden{display:none!important}
+label{display:block;color:#b3b8c7;font-size:13px;margin:12px 0 6px}
+input,select{font-size:14px}
+.action{
+  width:100%;padding:12px;margin-top:14px;background:#f04444;
+  border:0;border-radius:9px;color:white;font-weight:bold
+}
+.item-row{display:flex;gap:8px;align-items:center;margin-top:10px}
+.item-row select{flex:1}
+.item-row button{padding:10px;background:#292e3b;color:white;border:0;border-radius:8px}
+.result{font-size:20px;font-weight:bold;margin-top:12px}
+footer{text-align:center;padding:25px;color:#666d7c;font-size:12px}
+@media(min-width:650px){
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="brand">🍔 Food Trade</div>
+  <div class="subtitle">The School Food Economy</div>
+  
+<nav>
+  <button id="homeTab" class="active" onclick="showPage('home')">Home</button>
+  <button id="valuesTab" onclick="showPage('values')">Values</button>
+  <button id="calcTab" onclick="showPage('calculator')">Calculator</button>
+</nav>
+
+</header>
+
+<main>
+  
+<section id="homePage">
+  <div style="padding:28px 4px 20px">
+    <div style="font-size:12px;color:#f04444;font-weight:bold;letter-spacing:2px">
+      THE SCHOOL FOOD ECONOMY
+    </div>
+    <h1 style="font-size:36px;line-height:1.1;margin:14px 0">
+      Welcome to<br>Food Trade 🍔
+    </h1>
+    <p style="color:#a3a9b8;line-height:1.6">
+      Check food values, compare offers, and find out
+      whether a trade is a W, F, or L.
+    </p>
+  </div>
+
+  <button onclick="showPage('values')"
+    style="width:100%;text-align:left;padding:22px;background:#171c27;color:white;border:1px solid #383f50;border-radius:13px;margin:8px 0">
+    <div style="font-size:28px">📊</div>
+    <h2>Food Values →</h2>
+    <p style="color:#a3a9b8">Browse foods, values, rarities and demand.</p>
+  </button>
+
+  <button onclick="showPage('calculator')"
+    style="width:100%;text-align:left;padding:22px;background:#171c27;color:white;border:1px solid #383f50;border-radius:13px;margin:8px 0">
+    <div style="font-size:28px">⚖️</div>
+    <h2>Trade Calculator →</h2>
+    <p style="color:#a3a9b8">Compare both sides of a trade.</p>
+  </button>
+</section>
+
+<section id="valuesPage">
+  <h2>Food Values</h2>
+  <div class="muted">Browse foods and check their trading values.</div>
+  <input id="search" class="search" placeholder="Search for a food..." oninput="renderFoods()">
+  <div class="controls">
+    <select id="rarityFilter" onchange="renderFoods()">
+      <option value="">All rarities</option>
+      <option>Mythical</option><option>Legendary</option>
+      <option>Rare</option><option>Uncommon</option><option>Common</option>
+    </select>
+    <select id="sort" onchange="renderFoods()">
+      <option value="high">Highest value</option>
+      <option value="low">Lowest value</option>
+      <option value="demand">Highest demand</option>
+      <option value="name">Name A–Z</option>
+    </select>
+  </div>
+  <div id="foodGrid" class="grid"></div>
+</section>
+
+<section id="detailPage" class="hidden">
+  <button class="back" onclick="backToList()">← Back to list</button>
+  <div id="detailContent"></div>
+</section>
+
+<section id="calculatorPage" class="hidden">
+  <h2>Trade Calculator</h2>
+  <div class="muted">Add the foods offered by each side to compare their total values</div>
+  <div class="panel">
+    <h3>Your offer</h3>
+    <div id="yourItems"></div>
+    <button class="back" onclick="addItem('yourItems')">+ Add food</button>
+    <div class="result" id="yourTotal">Total: 0</div>
+  </div>
+  <div class="panel">
+    <h3>Their offer</h3>
+    <div id="theirItems"></div>
+    <button class="back" onclick="addItem('theirItems')">+ Add food</button>
+    <div class="result" id="theirTotal">Total: 0</div>
+  </div>
+  <div class="panel">
+    <div id="tradeResult">Add foods to compare the trade</div>
+  </div>
+</section>
+</main>
+
+<footer>Food Trade · Community trading values</footer>
+
+<script>
+const foods = [
+ {name:"Pizza",value:2000000,rarity:"Mythical",demand:9,emoji:"🍕"},
+ {name:"Biryani West (Non-Veg)",value:1200000,rarity:"Legendary",demand:7,emoji:"🍗"},
+ {name:"Cake",value:1200000,rarity:"Mythical",demand:10,emoji:"🎂"},
+ {name:"Burger",value:900000,rarity:"Legendary",demand:8,emoji:"🍔"},
+ {name:"Biryani East (Veg)",value:900000,rarity:"Legendary",demand:6,emoji:"🍚"},
+ {name:"Sandwich West (Non-Veg)",value:850000,rarity:"Legendary",demand:8,emoji:"🥪"},
+ {name:"Chicken Roll",value:800000,rarity:"Legendary",demand:8,emoji:"🌯"},
+ {name:"Oreos",value:700000,rarity:"Rare",demand:9,emoji:"🍪"},
+ {name:"Chocolate",value:650000,rarity:"Uncommon",demand:9,emoji:"🍫"},
+ {name:"Momos",value:650000,rarity:"Mythical",demand:7,emoji:"🥟"},
+ {name:"Bourbon",value:450000,rarity:"Rare",demand:8,emoji:"🍪"},
+ {name:"Chow Mein",value:400000,rarity:"Rare",demand:8,emoji:"🍜"},
+ {name:"Pasta",value:350000,rarity:"Rare",demand:7,emoji:"🍝"},
+ {name:"Donut",value:350000,rarity:"Legendary",demand:9,emoji:"🍩"},
+ {name:"Luchi Aloo Dum",value:350000,rarity:"Rare",demand:7,emoji:"🥘"},
+ {name:"Muffin",value:300000,rarity:"Rare",demand:7,emoji:"🧁"},
+ {name:"Sandwich East (Veg)",value:300000,rarity:"Rare",demand:6,emoji:"🥪"},
+ {name:"Paratha West (Paneer)",value:280000,rarity:"Rare",demand:7,emoji:"🫓"},
+ {name:"Patties",value:150000,rarity:"Common",demand:6,emoji:"🥐"},
+ {name:"Chips",value:150000,rarity:"Common",demand:6,emoji:"🍟"},
+ {name:"Paratha East (Aloo)",value:140000,rarity:"Common",demand:5,emoji:"🫓"},
+ {name:"Dosa",value:120000,rarity:"Common",demand:5,emoji:"🥞"},
+ {name:"Plain Paratha",value:70000,rarity:"Common",demand:3,emoji:"🫓"},
+ {name:"Puri",value:60000,rarity:"Common",demand:3,emoji:"🫓"},
+ {name:"Roti",value:40000,rarity:"Common",demand:2,emoji:"🫓"}
+];
+
+function formatValue(n){
+ if(n>=1000000)return (n/1000000).toLocaleString("en-US",{maximumFractionDigits:2})+"M";
+ if(n>=1000)return (n/1000).toLocaleString("en-US",{maximumFractionDigits:2})+"K";
+ return n.toLocaleString("en-US");
+}
+
+function renderFoods(){
+ const query=document.getElementById("search").value.toLowerCase();
+ const rarity=document.getElementById("rarityFilter").value;
+ const sort=document.getElementById("sort").value;
+ let list=foods.filter(f=>f.name.toLowerCase().includes(query)&&(!rarity||f.rarity===rarity));
+ if(sort==="high")list.sort((a,b)=>b.value-a.value);
+ if(sort==="low")list.sort((a,b)=>a.value-b.value);
+ if(sort==="demand")list.sort((a,b)=>b.demand-a.demand||b.value-a.value);
+ if(sort==="name")list.sort((a,b)=>a.name.localeCompare(b.name));
+
+ document.getElementById("foodGrid").innerHTML=list.map(f=>`
+ <button class="food-card" onclick="openDetail('${f.name.replace(/'/g,"\\'")}')">
+   <span class="rarity ${f.rarity}">${f.rarity}</span>
+   <div class="food-art">${f.emoji}</div>
+   <div class="food-name">${f.name}</div>
+   <div class="value">${formatValue(f.value)}</div>
+   <div class="demand-label"><span>Demand</span><span>${f.demand}/10</span></div>
+   <div class="bar"><div class="fill" style="width:${f.demand*10}%"></div></div>
+ </button>`).join("") || '<p class="muted">No foods found.</p>';
+}
+
+
+function showPage(page){
+ document.getElementById("homePage").classList.toggle("hidden",page!=="home");
+ document.getElementById("valuesPage").classList.toggle("hidden",page!=="values");
+ document.getElementById("detailPage").classList.add("hidden");
+ document.getElementById("calculatorPage").classList.toggle("hidden",page!=="calculator");
+
+ document.getElementById("homeTab").classList.toggle("active",page==="home");
+ document.getElementById("valuesTab").classList.toggle("active",page==="values");
+ document.getElementById("calcTab").classList.toggle("active",page==="calculator");
+}
+
+
+function openDetail(name){
+ const f=foods.find(x=>x.name===name);
+ if(!f)return;
+ document.getElementById("valuesPage").classList.add("hidden");
+ document.getElementById("detailPage").classList.remove("hidden");
+ document.getElementById("calculatorPage").classList.add("hidden");
+ document.getElementById("detailContent").innerHTML=`
+ <div class="detail-top">
+   <div class="detail-art">${f.emoji}</div>
+   <div><h2>${f.name}</h2><span class="rarity ${f.rarity}">${f.rarity}</span></div>
+ </div>
+ <div class="panel">
+   <div class="muted">Trading Value</div>
+   <div class="detail-value">${formatValue(f.value)}</div>
+   <div class="demand-label"><span>Demand</span><span>${f.demand}/10</span></div>
+   <div class="bar"><div class="fill" style="width:${f.demand*10}%"></div></div>
+ </div>`;
+ document.getElementById("valuesTab").classList.add("active");
+ document.getElementById("calcTab").classList.remove("active");
+}
+
+function backToList(){
+ document.getElementById("detailPage").classList.add("hidden");
+ document.getElementById("valuesPage").classList.remove("hidden");
+}
+
+function addItem(containerId){
+ const container=document.getElementById(containerId);
+ const row=document.createElement("div");
+ row.className="item-row";
+ row.innerHTML=`<select onchange="calculateTrade()">
+ ${foods.map(f=>`<option value="${f.name}">${f.name} — ${formatValue(f.value)}</option>`).join("")}
+ </select>
+ <input type="number" min="1" value="1" aria-label="Quantity" style="width:58px;padding:10px;background:#141822;color:white;border:1px solid #303544;border-radius:8px" onchange="calculateTrade()" oninput="calculateTrade()">
+ <button onclick="this.parentElement.remove();calculateTrade()">×</button>`;
+ container.appendChild(row);
+ calculateTrade();
+}
+
+function getTotal(containerId){
+ let total=0;
+ document.querySelectorAll("#"+containerId+" .item-row").forEach(row=>{
+  const name=row.querySelector("select").value;
+  const quantity=Math.max(0,Number(row.querySelector("input").value)||0);
+  const food=foods.find(f=>f.name===name);
+  if(food)total+=food.value*quantity;
+ });
+ return total;
+}
+
+function calculateTrade(){
+ const a=getTotal("yourItems");
+ const b=getTotal("theirItems");
+ document.getElementById("yourTotal").textContent="Total: "+formatValue(a);
+ document.getElementById("theirTotal").textContent="Total: "+formatValue(b);
+ const result=document.getElementById("tradeResult");
+ if(a===0&&b===0)result.textContent="Add foods to compare the trade.";
+ else if(a===b)result.textContent="Fair Trade";
+ else if(a>b)result.textContent="W for you · L for them";
+ else result.textContent="L for you · W for them";
+}
+renderFoods();
+  showPage('home');
+</script>
+</body>
+</html>
