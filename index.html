@@ -1,4 +1,4 @@
-7<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -81,14 +81,127 @@ button{cursor:pointer}
 .hidden{display:none!important}
 label{display:block;color:#b3b8c7;font-size:13px;margin:12px 0 6px}
 input,select{font-size:14px}
-.action{
-  width:100%;padding:12px;margin-top:14px;background:#f04444;
-  border:0;border-radius:9px;color:white;font-weight:bold
+
+/* Calculator Slot Styles */
+.calc-sides-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
 }
-.item-row{display:flex;gap:8px;align-items:center;margin-top:10px}
-.item-row select{flex:1}
-.item-row button{padding:10px;background:#292e3b;color:white;border:0;border-radius:8px}
-.result{font-size:20px;font-weight:bold;margin-top:12px}
+@media(max-width: 650px) {
+  .calc-sides-wrapper { grid-template-columns: 1fr; }
+}
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.trade-slot {
+  background: #151922;
+  border: 1px solid #292e3b;
+  border-radius: 10px;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  padding: 6px;
+  text-align: center;
+}
+.trade-slot:hover { border-color: #3d4456; }
+.trade-slot.empty {
+  border: 1px dashed #303544;
+  background: #11141c;
+  color: #727988;
+  font-size: 11px;
+  font-weight: bold;
+}
+.trade-slot .slot-emoji { font-size: 26px; margin-bottom: 2px; }
+.trade-slot .slot-name { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; color: #d0d5df; }
+.trade-slot .slot-val { font-size: 11px; font-weight: bold; color: #ffdc65; }
+
+/* Picker Grid */
+.calc-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: #090b10;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #292e3b;
+  margin-top: 10px;
+}
+.calc-picker-item {
+  background: #121620;
+  border: 1px solid #292e3b;
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+}
+.calc-picker-item:active { background: #202635; }
+
+/* Summary Card */
+.trade-summary-card {
+  background: #121620;
+  border: 1px solid #292e3b;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+  text-align: center;
+}
+.outcome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.badge-loss { background: rgba(240, 68, 68, 0.15); color: #f04444; border: 1px solid #f04444; }
+.badge-win { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid #2ecc71; }
+.badge-fair { background: rgba(241, 196, 15, 0.15); color: #f1c40f; border: 1px solid #f1c40f; }
+
+.summary-diff {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+.summary-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background: #0d1017;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #212632;
+  margin-bottom: 12px;
+  text-align: left;
+}
+.summary-stat-box div:first-child { color: #8c93a3; font-size: 11px; text-transform: uppercase; }
+.summary-stat-box div:last-child { color: white; font-size: 15px; font-weight: bold; margin-top: 2px; }
+
+.comparison-bar-track {
+  height: 8px;
+  background: #232836;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+  display: flex;
+}
+.comparison-bar-fill {
+  height: 100%;
+  background: #f04444;
+  transition: width 0.3s ease;
+}
+
 footer{text-align:center;padding:25px;color:#666d7c;font-size:12px}
 @media(min-width:650px){
   .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -167,21 +280,60 @@ footer{text-align:center;padding:25px;color:#666d7c;font-size:12px}
 
 <section id="calculatorPage" class="hidden">
   <h2>Trade Calculator</h2>
-  <div class="muted">Add the foods offered by each side to compare their total values</div>
-  <div class="panel">
-    <h3>Your offer</h3>
-    <div id="yourItems"></div>
-    <button class="back" onclick="addItem('yourItems')">+ Add food</button>
-    <div class="result" id="yourTotal">Total: 0</div>
+  <div class="muted">Click an empty slot to add foods to each side</div>
+
+  <div class="calc-sides-wrapper">
+    <div class="panel">
+      <h3>Your Offer</h3>
+      <div id="yourSlots" class="slots-grid"></div>
+    </div>
+    <div class="panel">
+      <h3>Their Offer</h3>
+      <div id="theirSlots" class="slots-grid"></div>
+    </div>
   </div>
-  <div class="panel">
-    <h3>Their offer</h3>
-    <div id="theirItems"></div>
-    <button class="back" onclick="addItem('theirItems')">+ Add food</button>
-    <div class="result" id="theirTotal">Total: 0</div>
+
+  <div class="trade-summary-card">
+    <div id="outcomeBadgeContainer">
+      <span class="outcome-badge badge-fair">Select foods to compare</span>
+    </div>
+    <div id="summaryDiffText" class="summary-diff">0</div>
+
+    <div class="summary-stats-grid">
+      <div class="summary-stat-box">
+        <div>You Give</div>
+        <div id="sumYourTotal">0</div>
+      </div>
+      <div class="summary-stat-box">
+        <div>You Receive</div>
+        <div id="sumTheirTotal">0</div>
+      </div>
+      <div class="summary-stat-box">
+        <div>Difference</div>
+        <div id="sumDiff">0</div>
+      </div>
+    </div>
+
+    <div class="comparison-bar-track">
+      <div id="barYourFill" class="comparison-bar-fill" style="width: 50%"></div>
+      <div id="barTheirFill" style="height:100%; background:#2ecc71; width:50%;"></div>
+    </div>
+    <div style="display:flex; justify-content:space-between; font-size:11px; color:#8c93a3;">
+      <span id="labelYourPct">You: 50%</span>
+      <span id="labelTheirPct">Them: 50%</span>
+    </div>
   </div>
-  <div class="panel">
-    <div id="tradeResult">Add foods to compare the trade</div>
+
+  <button class="back" style="width:100%; margin-top:12px; background:#1b202d;" onclick="resetCalculator()">Reset Calculator</button>
+
+  <!-- Food Picker Modal -->
+  <div id="foodPickerModal" class="panel hidden" style="margin-top: 16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3 style="margin:0">Add Item to Slot</h3>
+      <button class="back" style="margin:0; padding:6px 10px;" onclick="closeFoodPicker()">✕ Close</button>
+    </div>
+    <input id="pickerSearch" class="search" placeholder="Search food..." oninput="renderPickerGrid()">
+    <div id="pickerGrid" class="calc-picker-grid"></div>
   </div>
 </section>
 </main>
@@ -215,6 +367,7 @@ const foods = [
  {name:"Plain Paratha",value:70000,rarity:"Common",demand:3,emoji:"🫓"},
  {name:"Puri",value:60000,rarity:"Common",demand:3,emoji:"🫓"},
  {name:"Roti",value:40000,rarity:"Common",demand:2,emoji:"🫓"}
+ {name:"Apple",value:10000,rarity:"Common",demand:1,emoji:"🍎" }
 ];
 
 function formatValue(n){
@@ -281,60 +434,142 @@ function backToList(){
  document.getElementById("valuesPage").classList.remove("hidden");
 }
 
-function addItem(containerId){
- const container=document.getElementById(containerId);
- const row=document.createElement("div");
- row.className="item-row";
- row.innerHTML=`
- <select class="calc-select" onchange="calculateTrade()">
- ${foods.map(f=>`<option value="${f.name}">${f.name} —${formatValue(f.value)}</option>`).join("")}
- </select>
- <input type="number" class="calc-qty" min="1" value="1" aria-label="Quantity" style="width:58px;padding:10px;background:#141822;color:white;border:1px solid #303544;border-radius:8px" oninput="calculateTrade()" onchange="calculateTrade()">
- <button onclick="this.parentElement.remove();calculateTrade()">×</button>`;
- container.appendChild(row);
- calculateTrade();
+// Slot Calculator Logic
+let tradeData = {
+  yourSlots: [null, null, null, null, null, null],
+  theirSlots: [null, null, null, null, null, null]
+};
+
+let activeSlotInfo = { side: null, index: null };
+
+function renderCalculatorSlots() {
+  ['yourSlots', 'theirSlots'].forEach(side => {
+    const container = document.getElementById(side);
+    container.innerHTML = tradeData[side].map((itemName, idx) => {
+      if (!itemName) {
+        return `<div class="trade-slot empty" onclick="openSlotPicker('${side}', ${idx})">+ Add item</div>`;
+      } else {
+        const f = foods.find(x => x.name === itemName);
+        return `
+          <div class="trade-slot" onclick="openSlotPicker('${side}', ${idx})" title="Click to change/remove">
+            <div class="slot-emoji">${f.emoji}</div>
+            <div class="slot-name">${f.name}</div>
+            <div class="slot-val">${formatValue(f.value)}</div>
+          </div>
+        `;
+      }
+    }).join("");
+  });
+  calculateTradeStats();
 }
 
-function getTotal(containerId){
- let total=0;
- document.querySelectorAll("#"+containerId+" .item-row").forEach(row=>{
-  const selectElem=row.querySelector(".calc-select");
-  const qtyElem=row.querySelector(".calc-qty");
-  if(selectElem && qtyElem){
-   const name=selectElem.value;
-   const quantity=Math.max(0,Number(qtyElem.value)||0);
-   const food=foods.find(f=>f.name===name);
-   if(food)total+=food.value*quantity;
+function openSlotPicker(side, index) {
+  activeSlotInfo = { side, index };
+  document.getElementById("foodPickerModal").classList.remove("hidden");
+  document.getElementById("pickerSearch").value = "";
+  renderPickerGrid();
+}
+
+function closeFoodPicker() {
+  document.getElementById("foodPickerModal").classList.add("hidden");
+  activeSlotInfo = { side: null, index: null };
+}
+
+function renderPickerGrid() {
+  const query = document.getElementById("pickerSearch").value.toLowerCase();
+  const filtered = foods.filter(f => f.name.toLowerCase().includes(query));
+  
+  let clearOption = '';
+  if (activeSlotInfo.side !== null && tradeData[activeSlotInfo.side][activeSlotInfo.index] !== null) {
+    clearOption = `<div class="calc-picker-item" style="background:#2a1b1b; border-color:#e05656;" onclick="assignFoodToSlot(null)">
+      <div style="font-size:18px">🗑️</div>
+      <div style="font-weight:bold; color:#ff7777; font-size:11px; margin-top:2px;">Remove</div>
+    </div>`;
   }
- });
- return total;
+
+  document.getElementById("pickerGrid").innerHTML = clearOption + filtered.map(f => `
+    <div class="calc-picker-item" onclick="assignFoodToSlot('${f.name.replace(/'/g,"\\'")}')">
+      <div style="font-size:24px">${f.emoji}</div>
+      <div style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:12px;">${f.name}</div>
+      <div style="color:#ffdc65; font-size:11px;">${formatValue(f.value)}</div>
+    </div>
+  `).join("") || '<div class="muted" style="grid-column:span 3; text-align:center;">No foods found</div>';
 }
 
-function calculateTrade(){
- const a=getTotal("yourItems");
- const b=getTotal("theirItems");
- document.getElementById("yourTotal").textContent="Total: "+formatValue(a);
- document.getElementById("theirTotal").textContent="Total: "+formatValue(b);
- const result=document.getElementById("tradeResult");
- 
- if(a===0 && b===0) {
-  result.textContent="Add foods to compare the trade";
-  return;
- }
- 
- const diff = Math.abs(a - b);
- const threshold = Math.max(a, b) * 0.05;
+function assignFoodToSlot(foodName) {
+  if (activeSlotInfo.side === null) return;
+  tradeData[activeSlotInfo.side][activeSlotInfo.index] = foodName;
+  closeFoodPicker();
+  renderCalculatorSlots();
+}
 
- if(diff <= threshold){
-  result.textContent="🤝 Fair Trade";
- } else if(a > b){
-  result.textContent="🔴Loss";
- } else {
-  result.textContent="🟢Win";
- }
+function calculateTradeStats() {
+  let yourTotal = 0;
+  tradeData.yourSlots.forEach(name => {
+    if(name) { const f = foods.find(x => x.name === name); if(f) yourTotal += f.value; }
+  });
+
+  let theirTotal = 0;
+  tradeData.theirSlots.forEach(name => {
+    if(name) { const f = foods.find(x => x.name === name); if(f) theirTotal += f.value; }
+  });
+
+  document.getElementById("sumYourTotal").textContent = formatValue(yourTotal);
+  document.getElementById("sumTheirTotal").textContent = formatValue(theirTotal);
+
+  const diff = yourTotal - theirTotal;
+  const absDiff = Math.abs(diff);
+  const diffElem = document.getElementById("sumDiff");
+  diffElem.textContent = (diff > 0 ? "-" : diff < 0 ? "+" : "") + formatValue(absDiff);
+
+  const badgeContainer = document.getElementById("outcomeBadgeContainer");
+  const summaryDiffText = document.getElementById("summaryDiffText");
+
+  if(yourTotal === 0 && theirTotal === 0) {
+    badgeContainer.innerHTML = `<span class="outcome-badge badge-fair">Select foods to compare</span>`;
+    summaryDiffText.textContent = "0";
+    summaryDiffText.style.color = "white";
+    document.getElementById("barYourFill").style.width = "50%";
+    document.getElementById("barTheirFill").style.width = "50%";
+    document.getElementById("labelYourPct").textContent = "You: 50%";
+    document.getElementById("labelTheirPct").textContent = "Them: 50%";
+    return;
+  }
+
+  const threshold = Math.max(yourTotal, theirTotal) * 0.05;
+
+  if (Math.abs(diff) <= threshold) {
+    badgeContainer.innerHTML = `<span class="outcome-badge badge-fair">🤝 Fair Trade</span>`;
+    summaryDiffText.textContent = "Equal Value";
+    summaryDiffText.style.color = "#f1c40f";
+  } else if (diff > 0) {
+    badgeContainer.innerHTML = `<span class="outcome-badge badge-loss">📉 Loss</span>`;
+    summaryDiffText.textContent = "-" + formatValue(absDiff);
+    summaryDiffText.style.color = "#f04444";
+  } else {
+    badgeContainer.innerHTML = `<span class="outcome-badge badge-win">📈 Win</span>`;
+    summaryDiffText.textContent = "+" + formatValue(absDiff);
+    summaryDiffText.style.color = "#2ecc71";
+  }
+
+  const totalSum = yourTotal + theirTotal;
+  let yourPct = totalSum > 0 ? Math.round((yourTotal / totalSum) * 100) : 50;
+  let theirPct = 100 - yourPct;
+  
+  document.getElementById("barYourFill").style.width = yourPct + "%";
+  document.getElementById("barTheirFill").style.width = theirPct + "%";
+  document.getElementById("labelYourPct").textContent = "You: " + yourPct + "%";
+  document.getElementById("labelTheirPct").textContent = "Them: " + theirPct + "%";
+}
+
+function resetCalculator() {
+  tradeData.yourSlots = [null, null, null, null, null, null];
+  tradeData.theirSlots = [null, null, null, null, null, null];
+  renderCalculatorSlots();
 }
 
 renderFoods();
+renderCalculatorSlots();
 showPage('home');
 </script>
 </body>
