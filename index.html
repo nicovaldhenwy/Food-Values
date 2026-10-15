@@ -140,7 +140,7 @@ footer{text-align:center;padding:25px;color:#666d7c;font-size:12px}
   </button>
 </section>
 
-<section id="valuesPage">
+<section id="valuesPage" class="hidden">
   <h2>Food Values</h2>
   <div class="muted">Browse foods and check their trading values.</div>
   <input id="search" class="search" placeholder="Search for a food..." oninput="renderFoods()">
@@ -217,7 +217,6 @@ const foods = [
  {name:"Roti",value:40000,rarity:"Common",demand:2,emoji:"🫓"}
 ];
 
-
 function formatValue(n){
  if(n>=1000000)return (n/1000000).toLocaleString("en-US",{maximumFractionDigits:2})+"M";
  if(n>=1000)return (n/1000).toLocaleString("en-US",{maximumFractionDigits:2})+"K";
@@ -245,7 +244,6 @@ function renderFoods(){
  </button>`).join("") || '<p class="muted">No foods found.</p>';
 }
 
-
 function showPage(page){
  document.getElementById("homePage").classList.toggle("hidden",page!=="home");
  document.getElementById("valuesPage").classList.toggle("hidden",page!=="values");
@@ -256,7 +254,6 @@ function showPage(page){
  document.getElementById("valuesTab").classList.toggle("active",page==="values");
  document.getElementById("calcTab").classList.toggle("active",page==="calculator");
 }
-
 
 function openDetail(name){
  const f=foods.find(x=>x.name===name);
@@ -288,10 +285,11 @@ function addItem(containerId){
  const container=document.getElementById(containerId);
  const row=document.createElement("div");
  row.className="item-row";
- row.innerHTML=`<select onchange="calculateTrade()">
- ${foods.map(f=>`<option value="${f.name}">${f.name} — ${formatValue(f.value)}</option>`).join("")}
+ row.innerHTML=`
+ <select class="calc-select" onchange="calculateTrade()">
+ ${foods.map(f=>`<option value="${f.name}">${f.name} —${formatValue(f.value)}</option>`).join("")}
  </select>
- <input type="number" min="1" value="1" aria-label="Quantity" style="width:58px;padding:10px;background:#141822;color:white;border:1px solid #303544;border-radius:8px" onchange="calculateTrade()" oninput="calculateTrade()">
+ <input type="number" class="calc-qty" min="1" value="1" aria-label="Quantity" style="width:58px;padding:10px;background:#141822;color:white;border:1px solid #303544;border-radius:8px" oninput="calculateTrade()" onchange="calculateTrade()">
  <button onclick="this.parentElement.remove();calculateTrade()">×</button>`;
  container.appendChild(row);
  calculateTrade();
@@ -300,10 +298,14 @@ function addItem(containerId){
 function getTotal(containerId){
  let total=0;
  document.querySelectorAll("#"+containerId+" .item-row").forEach(row=>{
-  const name=row.querySelector("select").value;
-  const quantity=Math.max(0,Number(row.querySelector("input").value)||0);
-  const food=foods.find(f=>f.name===name);
-  if(food)total+=food.value*quantity;
+  const selectElem=row.querySelector(".calc-select");
+  const qtyElem=row.querySelector(".calc-qty");
+  if(selectElem && qtyElem){
+   const name=selectElem.value;
+   const quantity=Math.max(0,Number(qtyElem.value)||0);
+   const food=foods.find(f=>f.name===name);
+   if(food)total+=food.value*quantity;
+  }
  });
  return total;
 }
@@ -314,13 +316,26 @@ function calculateTrade(){
  document.getElementById("yourTotal").textContent="Total: "+formatValue(a);
  document.getElementById("theirTotal").textContent="Total: "+formatValue(b);
  const result=document.getElementById("tradeResult");
- if(a===0&&b===0)result.textContent="Add foods to compare the trade.";
- else if(a===b)result.textContent="Fair Trade";
- else if(a>b)result.textContent="W for you · L for them";
- else result.textContent="L for you · W for them";
+ 
+ if(a===0 && b===0) {
+  result.textContent="Add foods to compare the trade";
+  return;
+ }
+ 
+ const diff = Math.abs(a - b);
+ const threshold = Math.max(a, b) * 0.05;
+
+ if(diff <= threshold){
+  result.textContent="🤝 Fair Trade";
+ } else if(a > b){
+  result.textContent="🟢 W for you · 🔴 L for them";
+ } else {
+  result.textContent="🔴 L for you · 🟢 W for them";
+ }
 }
+
 renderFoods();
-  showPage('home');
+showPage('home');
 </script>
 </body>
 </html>
